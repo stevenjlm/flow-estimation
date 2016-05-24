@@ -1,0 +1,57 @@
+#!/usr/bin/env python
+"""
+rwSim.py is the main script for the Random Walk Simulator project
+"""
+
+"""
+The Random Walk Simulator project creates a random graph and starting
+point for an actor. As time progresses the actor takes a random step.
+A signal vector containing the number of visits on each node is
+projected into Markov domain and we plot the resulting coefficients.
+"""
+
+__author__ = "Steven Munn"
+__email__ = "sjmunn@umail.ucsb.edu"
+__date__ = "10-10-2015"
+
+# Standard
+import logging
+
+# Local files
+import GraphViz
+import SignalSimulation
+import UniverseDomains
+
+# Setup reporting
+log=logging.getLogger("Random_Walk_Sim")
+log.setLevel(logging.DEBUG)
+# Send log output to terminal
+console = logging.StreamHandler()
+console.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(levelname)s : %(message)s')
+console.setFormatter(formatter)
+log.addHandler(console)
+
+# File directory
+folder = 'uniform/'
+
+# Create a universe
+Home=UniverseDomains.Universe()
+Home.initRandom(50)
+filename = folder + "010_graphStruct.gexf"
+GraphViz.plotToGexf(Home.Graph, filename)
+Home.matrixRepresentation()
+domain=UniverseDomains.NormalDomain(Home)
+domain.buildFullBasis()
+
+# Create a uniform signal
+uniformSig = SignalSimulation.BasicSignals(Home)
+uniformSig.uniformSignal()
+signal = uniformSig.visitCount
+
+# Domain transform
+visual = GraphViz.SignalViz(signal, Home, domain)
+filename = folder + '010_uniformSigTransform.pdf'
+visual.plotCoefs(filename)
+filename = folder + '011_uniformPrefixSigTransfrom.pdf'
+visual.plotPrefixCoefs(filename)
