@@ -35,18 +35,11 @@ plt.style.use('ggplot')
 
 # -------------------- Begin simulations
 
-"""
-SIMPLER3 A Simple system with one rection and three metabolites
- INPUT:    M>0:      (3,1) vector containing [M1(t);M2(t);M3(t)];
- INPUT:    theta:  unknown parameter of the only reaction.
- OUTPUT:   dM:     (3,1) vector of inf. increments [dM1(t);dM2(t);dM3(t)] 
-"""
-
 def HwOneR3(t, M, theta1, theta2):
     dM = np.zeros((3,1))
     dM[0] = 1
     dM[1] = theta2*M[2]
-    dM[2] = theta1*M[0]*M[1]
+    dM[2] = theta1*(M[0]+M[1])
     return dM
 
 # The ``driver`` that will integrate the ODE(s):
