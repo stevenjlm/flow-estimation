@@ -11,19 +11,19 @@ __date__ = "05-23-2016"
 # -------------------- Logging Tools
 import logging
 
+LEVEL = logging.INFO
+
 # Setup reporting
 log=logging.getLogger("Flow_Net")
-log.setLevel(logging.DEBUG)
+log.setLevel(LEVEL)
 # Send log output to terminal
 console = logging.StreamHandler()
-console.setLevel(logging.DEBUG)
+console.setLevel(LEVEL)
 formatter = logging.Formatter('%(levelname)s : %(message)s')
 console.setFormatter(formatter)
 log.addHandler(console)
 
 # -------------------- Scientific Computing
-from scipy.integrate import ode
-from scipy.stats import norm
 import numpy as np
 
 # -------------------- Plotting and display libraries
@@ -35,7 +35,9 @@ import matplotlib.pyplot as plt
 plt.style.use('ggplot')
 
 # -------------------- Local Modules
-import Objs/Universe
+import sys
+sys.path.insert(0, './Objs/')
+import Universe
 
 # -------------------- Begin simulations
 
@@ -43,12 +45,26 @@ if __name__ == '__main__':
     log.info("Main script for 02Drv_GraphStruct.py has begun")
 
     # parameters
-    trueThetas = np.array([0.75, 2])
+    trueThetas = np.array([1, 2])
     W = np.array([[1, 0, trueThetas[0]],
                   [0, 0, trueThetas[0]],
                   [0, trueThetas[1], 0]])
-    t = np.arrange(9)    
+    t = np.arange(9)    
     
     R3HwOne = Universe.Universe()
     R3HwOne.initFromMatrix(W)
     R3HwOne.simulateUniverse(t)
+
+    Measure = Universe.Measurement()
+    Measure.simulateNodeMeasurement( R3HwOne, 2, 1)
+
+    # paramater estimation
+    WlowerBound = np.array([[ 1, 0, 0],
+                            [ 0, 0, 1],
+                            [ 0, 3, 0]])
+    WupperBound = np.array([[ 1, 0, 5],
+                            [ 0, 0, 1],
+                            [ 0, 3, 0]])
+    Est = Universe.Estimate()
+    Est.estimateParameters( R3HwOne, Measure, WlowerBound, WupperBound)
+    

@@ -97,6 +97,7 @@
 \usepackage{graphicx} %                      Allows including images
 \usepackage{booktabs} %                      Allows the use of \toprule, \midrule
 %                                            and \bottomrule in tables
+\usepackage{bm}
 
 %----------------------------------------------------------------------------------------
 %	                                                                       Title Page
@@ -105,7 +106,7 @@
 %                                            The short title appears at the bottom of
 %                                            every slide, the title is only on the
 %                                            title page
-\title[Network Process Modeling]{Parameter Estimation for Networks Processes}
+\title[Network Process Modeling]{Parameter Estimation for Network Processes}
 
 \author{Steven Munn} %                       Your name
 
@@ -176,8 +177,122 @@ University of California, Santa Barbara \\ % Your institution for the title page
 \end{frame}
 
 \begin{frame}
-\frametitle{Estimate Parameters}
-The goal is to model the process that creates the graph attributes.
+\frametitle{Graph Weights}
+\begin{columns}
+\begin{column}{0.3\textwidth}
+\[
+\mathbf{W}=\left[\begin{array}{ccc}
+w_{00} & w_{01} & w_{02}\\
+w_{10} & w_{11} & w_{12}\\
+w_{20} & w_{21} & w_{22}
+\end{array}\right]
+\]
+\end{column}
+\begin{column}{0.7\textwidth}  %%<--- here
+    \begin{center}
+     \includegraphics[width=0.5\textwidth]{figs/reacWeights}
+     \end{center}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}
+\frametitle{Reaction ODE}
+\[
+dM^{T}=\left[\begin{array}{cccc}
+1 & 1 & 1 & ...\end{array}\right]\times\left[\begin{array}{cccc}
+w_{00} & w_{01} & w_{02} & ...\\
+w_{10} & w_{11} & w_{12} & ...\\
+w_{20} & w_{21} & w_{22} & ...\\
+... &  &  & ...
+\end{array}\right]\otimes\left[\begin{array}{cccc}
+1 & M_{0} & M_{0} & ...\\
+M_{1} & 1 & M_{1} & ...\\
+M_{2} & M_{2} & 1 & ...\\
+... &  &  & ...
+\end{array}\right]
+\]
+\end{frame}
+
+\begin{frame}
+\frametitle{Example: Homework One}
+\begin{eqnarray*}
+dM^{T} & = & \left[\begin{array}{ccc}
+1 & 1 & 1\end{array}\right]\times\left[\begin{array}{ccc}
+1 & 0 & \theta_{1}\\
+0 & 0 & \theta_{1}\\
+0 & \theta_{2} & 0
+\end{array}\right]\otimes\left[\begin{array}{ccc}
+1 & M_{0} & M_{0}\\
+M_{1} & 1 & M_{1}\\
+M_{2} & M_{2} & 1
+\end{array}\right]\\
+ & = & \left[\begin{array}{ccc}
+1 & 1 & 1\end{array}\right]\times\left[\begin{array}{ccc}
+1 & 0 & \theta_{1}M_{0}\\
+0 & 0 & \theta_{1}M_{1}\\
+0 & \theta_{2}M_{2} & 0
+\end{array}\right]\\
+ & = & \left[\begin{array}{ccc}
+1 & \theta_{2}M_{2} & \theta_{1}\left(M_{0}+M_{1}\right)\end{array}\right]
+\end{eqnarray*}
+\end{frame}
+
+%------------------------------------------------
+\section{Gibbs Sampling}
+
+\begin{frame}
+\frametitle{Multiple Parameters Estimation}
+Start with parameters $\bm{\theta}^{\left( t\right)}$ (e.g. sampled from a uniform distribution)
+Update each component one after the other as follows:
+\begin{itemize}
+\item Sample $\theta^{\left( t + 1 \right)}_{1}$ from $p \left( \theta_{1} | \text{data}, \theta_{2}, \theta_{3}, ... \right)$
+\item Sample $\theta^{\left( t+1 \right)}_{2}$ from $p \left( \theta_{2} | \text{data}, \theta_{1}, \theta_{3}, ... \right)$
+\item ...
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Gibbs Sampling for Reaction Networks}
+
+\begin{block}{Step 1}
+Define an upper and lower bound ( $\bm{W}_{up}$ and $\bm{W}_{low}$ ) on the graph weights.
+\end{block}
+
+\begin{block}{Step 2}
+Initialize the probability for each parameter as a uniform distribution between the upper and lower bounds,
+\[
+p\left(w_{ij}\right)=u\left(\left( \bm{W}_{up} \right)_{ij}, \left( \bm{W}_{low} \right)_{ij} \right)
+\]
+\end{block}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Gibbs Sampling for Reaction Networks}
+
+We now have an initial guess for the weights matrix $\bm{W}$. Next, we will update each component one at a time.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Gibbs Update for first component}
+We need to compute,
+\[
+p\left(w_{00}|\text{data},w_{01},w_{02},w_{10},w_{11},...\right)
+\]
+to sample a new value for $w_{00}$. Currently, we do this using the same Bayesian inference method from homework one.
+\end{frame}
+
+\begin{frame}
+\frametitle{Problems with Gibbs Sampling}
+\begin{block}{Probability Distribution is not Helpful}
+Unfortunately, if the weight matrix is not close to the ground truth then,
+\[
+p\left(w_{00}|\text{data},w_{01},w_{02},w_{10},w_{11},...\right)
+\]
+yields a distribution that converges on meaningless values and Gibbs sampling gets stuck.
+\end{block}
 \end{frame}
 
 \end{document}

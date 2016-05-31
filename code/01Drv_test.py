@@ -52,7 +52,7 @@ if __name__ == '__main__':
     M0 = np.ones((3,1))
 
     # parameters
-    trueThetas = np.array([0.75, 2])
+    trueThetas = np.array([0.75, 50])
     
     r = ode( HwOneR3).set_integrator('dopri5')
     r.set_initial_value([M0[0], M0[1], M0[2]], t[0])
@@ -113,7 +113,7 @@ if __name__ == '__main__':
         if (np.sum(posterior_t[tStep,:])/float(nsteps)) != 0:
             posterior_t[tStep,:] = posterior_t[tStep,:] / (np.sum(posterior_t[tStep,:])/float(nsteps))
         else:
-            posterior_t[tStep,:] = 0
+            posterior_t[tStep,:] = posterior_t[tStep - 1,:]
 
         plt.plot(posterior_t[tStep,:])
         plt.ylabel('AU non-normalized probability')
