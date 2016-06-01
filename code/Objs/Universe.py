@@ -214,8 +214,6 @@ class Estimate:
             for tStep in range(1,Measurement.nTimeSteps - 1):
                 posterior_t[tStep, iParamStep] = posterior_t[tStep -1, iParamStep] * norm.pdf(Measurement.Mhat[tStep +1], testVerse.M[Measurement.node,tStep + 1], Measurement.vv)
 
-        self.log.info('0-Pdf for w_02')
-        self.log.info(posterior_t[0,:])
         # We've learned nothing if the first posterior is beneath tolerance
         tol = 1e-1
         if (np.sum(posterior_t[0,:]) < tol):
@@ -251,10 +249,10 @@ class Estimate:
     """
     def estimateParameters(self, Universe, Measurement, Wl, Wu):
         # Parameter steps
-        nSteps = 11
+        nSteps = 2000
         self.nSteps = nSteps
         # Gibbs steps
-        self.gibbsSteps = 3
+        self.gibbsSteps = 100
         
         nTimeSteps = Measurement.nTimeSteps
         self.iSzWeights = np.size( Wl, 0)

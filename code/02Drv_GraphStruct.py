@@ -59,12 +59,12 @@ if __name__ == '__main__':
     Measure.simulateNodeMeasurement( R3HwOne, 2, 1)
 
     # paramater estimation
-    WlowerBound = np.array([[ 1, 0, 0],
-                            [ 0, 0, 1],
-                            [ 0, 3, 0]])
-    WupperBound = np.array([[ 1, 0, 5],
-                            [ 0, 0, 1],
-                            [ 0, 3, 0]])
+    WlowerBound = np.array([[ 1, 0, 0.5],
+                            [ 0, 0, 0.5],
+                            [ 0, 1.5, 0]])
+    WupperBound = np.array([[ 1, 0, 1.5],
+                            [ 0, 0, 1.5],
+                            [ 0, 2.5, 0]])
     Est = Universe.Estimate()
     Est.estimateParameters( R3HwOne, Measure, WlowerBound, WupperBound)
     

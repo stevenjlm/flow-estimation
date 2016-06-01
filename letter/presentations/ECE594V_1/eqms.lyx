@@ -71,7 +71,7 @@
 \begin_layout Standard
 \begin_inset Formula 
 \[
-\left[\begin{array}{cccc}
+dM^{t}=\left[\begin{array}{cccc}
 1 & 1 & 1 & ...\end{array}\right]\times\left[\begin{array}{cccc}
 w_{00} & w_{01} & w_{02} & ...\\
 w_{10} & w_{11} & w_{12} & ...\\
@@ -82,6 +82,18 @@ w_{20} & w_{21} & w_{22} & ...\\
 M_{1} & 1 & M_{1} & ...\\
 M_{2} & M_{2} & 1 & ...\\
 ... &  &  & ...
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\mathbf{W}=\left[\begin{array}{ccc}
+w_{00} & w_{01} & w_{02}\\
+w_{10} & w_{11} & w_{12}\\
+w_{20} & w_{21} & w_{22}
 \end{array}\right]
 \]
 
@@ -110,8 +122,27 @@ M_{0} & 0 & \theta_{1}M_{0}\\
 0 & \theta_{2}M_{2} & 0
 \end{array}\right]\\
  & = & \left[\begin{array}{ccc}
-1 & \theta_{2}M_{2} & \theta_{1}\left(M_{0}+M_{}\right)\end{array}\right]
+1 & \theta_{2}M_{2} & \theta_{1}\left(M_{0}+M_{1}\right)\end{array}\right]
 \end{eqnarray*}
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+p\left(w_{ij}\right)=u\left(w,w\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+p\left(w_{00}|x,w_{01},w_{02},w_{10},w_{11},...\right)
+\]
 
 \end_inset
 
