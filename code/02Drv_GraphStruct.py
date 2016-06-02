@@ -39,17 +39,18 @@ import sys
 sys.path.insert(0, './Objs/')
 import Universe
 
+
 # -------------------- Begin simulations
 
 if __name__ == '__main__':
     log.info("Main script for 02Drv_GraphStruct.py has begun")
 
     # parameters
-    trueThetas = np.array([1, 2])
+    trueThetas = np.array([-1, 1.40001])
     W = np.array([[1, 0, trueThetas[0]],
                   [0, 0, trueThetas[0]],
                   [0, trueThetas[1], 0]])
-    t = np.arange(9)    
+    t = np.arange(9)
     
     R3HwOne = Universe.Universe()
     R3HwOne.initFromMatrix(W)
@@ -59,12 +60,11 @@ if __name__ == '__main__':
     Measure.simulateNodeMeasurement( R3HwOne, 2, 1)
 
     # paramater estimation
-    WlowerBound = np.array([[ 1, 0, 0.5],
-                            [ 0, 0, 0.5],
-                            [ 0, 1.5, 0]])
-    WupperBound = np.array([[ 1, 0, 1.5],
-                            [ 0, 0, 1.5],
-                            [ 0, 2.5, 0]])
-    Est = Universe.Estimate()
+    WlowerBound = np.array([[ 1, 0, -1],
+                            [ 0, 0, -1],
+                            [ 0, 1.4, 0]])
+    WupperBound = np.array([[ 1, 0, -1],
+                            [ 0, 0, -1],
+                            [ 0, 1.6, 0]])
+    Est = Universe.ParticleEstimator()
     Est.estimateParameters( R3HwOne, Measure, WlowerBound, WupperBound)
-    

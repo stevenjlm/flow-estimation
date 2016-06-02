@@ -19,6 +19,7 @@ from scipy import stats
 
 from scipy.integrate import ode
 from scipy.stats import norm
+from scipy.stats import multivariate_normal
 import numpy as np
 
 # -------------------- NetworkX
@@ -99,11 +100,11 @@ class Universe:
     Universe Simulation
     """        
     def simulateUniverse(self,time):
-        self.log.debug('Simulating ground truth data')
+        # self.log.debug('Simulating ground truth data')
         tempText = 'For ' + str( self.nNodes) + ' nodes.'
-        self.log.debug(tempText)
+        # self.log.debug(tempText)
         tempText = 'Over ' + str( np.size(time)) + ' time steps.'
-        self.log.debug(tempText)
+        # self.log.debug(tempText)
         
         self.M = np.zeros(( self.nNodes, np.size(time)))
         # set initial conditions
@@ -123,8 +124,8 @@ class Universe:
             self.M[:,k] = r.y.ravel()
             k+=1
 
-        self.log.debug('Done simulating ground truth')
-        self.log.debug(self.M)
+        # self.log.debug('Done simulating ground truth')
+        # self.log.debug(self.M)
 
     """
     Class Initialization
@@ -164,7 +165,7 @@ The estimate class computes parameters for a universe
 from a measurement, or set of measurements
 """
 
-class Estimate:
+class GibbsEstimator:
     """
     Draw a sample for a weight
     Uses similar notation to,
@@ -249,10 +250,10 @@ class Estimate:
     """
     def estimateParameters(self, Universe, Measurement, Wl, Wu):
         # Parameter steps
-        nSteps = 2000
+        nSteps = 15
         self.nSteps = nSteps
         # Gibbs steps
-        self.gibbsSteps = 100
+        self.gibbsSteps = 5
         
         nTimeSteps = Measurement.nTimeSteps
         self.iSzWeights = np.size( Wl, 0)
@@ -281,9 +282,127 @@ class Estimate:
             self._gibbsSamplingStep(Measurement, iGStep)
             self.log.info('New weights')
             self.log.info(self.We)
+        
     """
     Class Initialization
     """
     def __init__(self):
         self.log=logging.getLogger("Flow_Net")
    
+
+"""
+Particle Filter Estimator
+"""
+class ParticleEstimator:
+    """
+    Draw a sample for a weight
+    """
+    def _drawOgWeightSample(self, i, j):
+        s = np.random.uniform(self.Wl[i,j], self.Wu[i,j],1)
+        return s[0]
+
+    """
+    Make a first guess as to the weight values
+    """
+    def _ogWeightsGuess(self, iParticle):
+        # We is the weight estimate
+        for iWeight in range( 0, self.iSzWeights):
+            for jWeight in range( 0, self.jSzWeights):
+                self.We[iWeight, jWeight, iParticle] = self._drawOgWeightSample( iWeight, jWeight)
+
+    """
+    Compute importance weights
+    """
+    def _computeImportanceWeights(self, Measurement, tStep):
+        for iParticle in range(0, self.nParticles):
+            Wtrial = self.We[:,:,iParticle]
+
+            testVerse = Universe()
+            testVerse.initFromMatrix(Wtrial)
+            t = np.arange( tStep + 1)
+            testVerse.simulateUniverse(t)
+
+            self.log.debug('Measurement')
+            self.log.debug( Measurement.Mhat[ tStep])
+            self.log.debug('test val')
+            self.log.debug( testVerse.M[ Measurement.node, tStep])
+            iw = norm.pdf(Measurement.Mhat[ tStep], testVerse.M[ Measurement.node, tStep], Measurement.vv)
+            self.importanceWeights[iParticle] = iw
+
+    """
+    Draw a sample particle number
+    Uses similar notation to,
+    http://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.rv_discrete.html
+    """
+    def _drawParticleNumber(self):
+        xk = np.arange( self.nParticles)
+        pk = self.importanceWeights
+        pk = pk/np.sum(pk)
+
+        custm = stats.rv_discrete(name='custm', values=(xk, pk))
+
+        randomIdx = custm.rvs(size=1)
+        return randomIdx
+
+    """
+    Resample
+    """
+    def _resample(self, tStep):
+        graphWeightsBar = np.zeros( ( self.iSzWeights, self.jSzWeights, self.nParticles))
+        for iParticle in range(0, self.nParticles):
+            particleIdx = self._drawParticleNumber()
+            graphWeightsBar[:,:,iParticle] = np.squeeze(self.We[:,:,particleIdx])
+
+        self.Wbar[tStep] = graphWeightsBar
+
+    """
+    Estimate Parameters using a particle filter
+    """
+    def estimateParameters(self, Universe, Measurement, Wl, Wu):
+        self.Wu = Wu
+        self.Wl = Wl
+        self.iSzWeights = np.size( Wl, 0)
+        self.jSzWeights = np.size( Wl, 1)
+        self.nTimeSteps = Measurement.nTimeSteps
+        
+        self.nParticles = 2000
+        self.We = np.zeros( ( self.iSzWeights, self.jSzWeights, self.nParticles))
+        self.Wbar = {}
+
+        # Initialize Particle filter
+        for iParticle in range(0, self.nParticles):
+            self._ogWeightsGuess( iParticle)
+
+        self.log.debug('Originial Weights')
+        for iParticle in range(0, self.nParticles):
+            self.log.debug(self.We[:,:,iParticle])
+
+        tStep = 0
+        self.importanceWeights = np.zeros( ( self.nParticles, 1))
+        self._computeImportanceWeights( Measurement, tStep)
+        self.log.debug('Importance weights')
+        self.log.debug( self.importanceWeights)
+        self._resample( tStep)
+        
+        for tStep in range(1, self.nTimeSteps):
+            self.We = self.Wbar[tStep - 1]
+            
+            self.log.debug('Resampled Weights')
+            for iParticle in range(0, self.nParticles):
+                self.log.debug(self.We[:,:,iParticle])
+            
+            self._computeImportanceWeights(Measurement, tStep)
+            self.log.debug('Importance weights')
+            self.log.debug( self.importanceWeights)
+            self._resample( tStep)
+
+            self.log.info('Avg weightBar for time step ' + str(tStep) + ' is,')
+            self.log.info(np.ndarray.mean( self.Wbar[ tStep],2))
+
+        self.log.info('Done particle filtering! Here it goes.. The average weight particle is,')
+        self.log.info(np.ndarray.mean( self.Wbar[ self.nTimeSteps - 1],2))
+    """
+    Class Initialization
+    """
+    def __init__(self):
+        self.log=logging.getLogger("Flow_Net")
