@@ -11,7 +11,7 @@ __date__ = "05-23-2016"
 # -------------------- Logging Tools
 import logging
 
-LEVEL = logging.INFO
+LEVEL = logging.DEBUG
 
 # Setup reporting
 log=logging.getLogger("Flow_Net")
@@ -46,7 +46,7 @@ if __name__ == '__main__':
     log.info("Main script for 02Drv_GraphStruct.py has begun")
 
     # parameters
-    trueThetas = np.array([-1, 1.40001])
+    trueThetas = np.array([-1, 1.45])
     W = np.array([[1, 0, trueThetas[0]],
                   [0, 0, trueThetas[0]],
                   [0, trueThetas[1], 0]])
