@@ -285,14 +285,95 @@ to sample a new value for $w_{00}$. Currently, we do this using the same Bayesia
 \end{frame}
 
 \begin{frame}
-\frametitle{Problems with Gibbs Sampling}
-\begin{block}{Probability Distribution is not Helpful}
-Unfortunately, if the weight matrix is not close to the ground truth then,
+\frametitle{An example with two parameters}
+True parameters,
 \[
-p\left(w_{00}|\text{data},w_{01},w_{02},w_{10},w_{11},...\right)
+\mathbf{W}=\left[\begin{array}{ccc}
+1 & 0 & 1\\
+0 & 0 & 1\\
+0 & -1.45 & 0
+\end{array}\right]
 \]
-yields a distribution that converges on meaningless values and Gibbs sampling gets stuck.
+
+\begin{columns}
+\begin{column}{0.5\textwidth}
+
+\[
+\mathbf{W_{lower}}=\left[\begin{array}{ccc}
+1 & 0 & 0\\
+0 & 0 & 0\\
+0 & -1.45 & 0
+\end{array}\right]
+\]
+
+\end{column}
+\begin{column}{0.5\textwidth}  %%<--- here
+
+\[
+\mathbf{W_{upper}}=\left[\begin{array}{ccc}
+1 & 0 & 2\\
+0 & 0 & 2\\
+0 & -1.45 & 0
+\end{array}\right]
+\]
+
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}
+\frametitle{$w_{02}$ Estimate at step 1}
+\begin{figure}
+\includegraphics[width=0.8\linewidth]{figs/1_WeDistr}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{$w_{02}$ Estimate at step 8}
+\begin{figure}
+\includegraphics[width=0.8\linewidth]{figs/8_WeDistr}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{$w_{02}$ Estimate at step 9}
+\begin{figure}
+\includegraphics[width=0.8\linewidth]{figs/9_WeDistr}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{$w_{02}$ Estimate at step 10}
+\begin{figure}
+\includegraphics[width=0.8\linewidth]{figs/10_WeDistr}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{$w_{02}$ Estimate at step 11}
+\begin{figure}
+\includegraphics[width=0.8\linewidth]{figs/11_WeDistr}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{$w_{02}$ Estimate at step 12}
+\begin{figure}
+\includegraphics[width=0.8\linewidth]{figs/12_WeDistr}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{Gibbs Sampling Problems}
+\begin{block}{Probability density in parameter space is too focused}
+{Most of the parameter space has near-zero probability. The space over plausible parameters is very small. This is espcially true for runaway reactions (where the rates are all positive).}
 \end{block}
 \end{frame}
+
+\begin{frame}
+\frametitle{Particle Filters}
+\begin{block}{Bootstrap method probably has bugs}
+{Perhaps a regularized particle filter would be effective?}
+\end{block}
 
 \end{document}

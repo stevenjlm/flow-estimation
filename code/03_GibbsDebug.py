@@ -35,10 +35,7 @@ import matplotlib.pyplot as plt
 plt.style.use('ggplot')
 
 # -------------------- Local Modules
-import sys
-sys.path.insert(0, './Objs/')
-import Universe
-
+import Objs
 
 # -------------------- Begin simulations
 
@@ -51,20 +48,24 @@ if __name__ == '__main__':
                   [0, 0, trueThetas[0]],
                   [0, trueThetas[1], 0]])
     t = np.arange(9)
-    
-    R3HwOne = Universe.Universe()
+
+    # simulate universe
+    R3HwOne = Objs.Universe()
     R3HwOne.initFromMatrix(W)
     R3HwOne.simulateUniverse(t)
 
-    Measure = Universe.Measurement()
+    # simulate measurement
+    Measure = Objs.Measurement()
     Measure.simulateNodeMeasurement( R3HwOne, 2, 0.1)
 
-    # paramater estimation
+    # paramater estimation bounds
     WlowerBound = np.array([[ 1, 0, 0],
                             [ 0, 0, 0],
                             [ 0, -1.45, 0]])
-    WupperBound = np.array([[ 1, 0, 2],
-                            [ 0, 0, 2],
+    WupperBound = np.array([[ 1, 0, 10],
+                            [ 0, 0, 10],
                             [ 0, -1.45, 0]])
-    Est = Universe.GibbsEstimator(5,5)
+
+    # estimate parameters
+    Est = Objs.GibbsEstimator( 2000, 20)
     Est.estimateParameters( R3HwOne, Measure, WlowerBound, WupperBound)
