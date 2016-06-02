@@ -255,10 +255,7 @@ class GibbsEstimator:
     """
     def estimateParameters(self, Universe, Measurement, Wl, Wu):
         # Parameter steps
-        nSteps = 15
-        self.nSteps = nSteps
-        # Gibbs steps
-        self.gibbsSteps = 5
+        nSteps = self.nSteps
         
         nTimeSteps = Measurement.nTimeSteps
         self.iSzWeights = np.size( Wl, 0)
@@ -291,7 +288,9 @@ class GibbsEstimator:
     """
     Class Initialization
     """
-    def __init__(self):
+    def __init__(self, nParameterSteps, nGibbsSteps):
+        self.nSteps = nParameterSteps
+        self.gibbsSteps = nGibbsSteps
         self.log=logging.getLogger("Flow_Net")
    
 """
