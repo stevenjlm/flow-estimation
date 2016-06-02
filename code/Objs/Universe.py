@@ -25,6 +25,11 @@ import numpy as np
 # -------------------- NetworkX
 import networkx as nx
 
+# -------------------- Plotting and display libraries
+import matplotlib as mpl
+# matplotlib.use('Agg') # Use Agg b/c MacOSX backend bug
+import matplotlib.pyplot as plt
+
 # --------------------
 """
 ODE integration function
@@ -289,7 +294,6 @@ class GibbsEstimator:
     def __init__(self):
         self.log=logging.getLogger("Flow_Net")
    
-
 """
 Particle Filter Estimator
 """
@@ -319,22 +323,15 @@ class ParticleEstimator:
 
             testVerse = Universe()
             testVerse.initFromMatrix(Wtrial)
-            t = np.arange( self.nTimeSteps)
+            t = np.arange( tStep + 1)
             testVerse.simulateUniverse(t)
 
-            self.log.debug('Mesured')
-            self.log.debug(Measurement.Mhat)
-            self.log.debug('Simulated')
-            self.log.debug(testVerse.M[Measurement.node,:])
-
-            posterior = np.zeros(Measurement.nTimeSteps-1)
-            posterior[0] = 1 * norm.pdf(Measurement.Mhat[1], testVerse.M[Measurement.node,1], Measurement.vv)
-            for tStep in range(1,Measurement.nTimeSteps - 1):
-                posterior[tStep] = posterior[tStep -1] * norm.pdf(Measurement.Mhat[tStep +1], testVerse.M[Measurement.node,tStep + 1], Measurement.vv)
-
-            self.log.debug('posterior value')
-            self.log.debug(posterior[Measurement.nTimeSteps - 2])
-            self.importanceWeights[iParticle] = posterior[Measurement.nTimeSteps - 2]
+            self.log.debug('Measurement')
+            self.log.debug( Measurement.Mhat[ tStep])
+            self.log.debug('test val')
+            self.log.debug( testVerse.M[ Measurement.node, tStep])
+            iw = norm.pdf( Measurement.Mhat[ tStep], testVerse.M[ Measurement.node, tStep], Measurement.vv)
+            self.importanceWeights[iParticle] = iw
 
     """
     Draw a sample particle number
@@ -363,6 +360,19 @@ class ParticleEstimator:
         self.Wbar[tStep] = graphWeightsBar
 
     """
+    We Histogram plots
+    """
+    def plotGraphWeightsDistribution(self, i, j, tStep):
+        plt.hist(self.We[i,j,:],100)
+        plt.title("Graph Weights distribution")
+        plt.xlabel("Value")
+        plt.ylabel("Frequency")
+        
+        filename = "out/" + str(tStep) + "_WeDistr.pdf"
+        plt.savefig(filename,transparent=True) # save as pdf for higher quality
+        plt.close()
+
+    """
     Estimate Parameters using a particle filter
     """
     def estimateParameters(self, Universe, Measurement, Wl, Wu):
@@ -371,9 +381,8 @@ class ParticleEstimator:
         self.iSzWeights = np.size( Wl, 0)
         self.jSzWeights = np.size( Wl, 1)
         self.nTimeSteps = Measurement.nTimeSteps
-        self.particleSteps = 3
         
-        self.nParticles = 3
+        self.nParticles = 10000
         self.We = np.zeros( ( self.iSzWeights, self.jSzWeights, self.nParticles))
         self.Wbar = {}
 
@@ -386,22 +395,24 @@ class ParticleEstimator:
         DEBUG
         ==============================
         """
-        self.We[:,:,0] = np.array([[1, 0, -1],
-                                   [0, 0, -1],
-                                   [0, 1.45, 0]])
-        
+        self.We[:,:,0] = np.array([[1, 0, 1],
+                                   [0, 0, 1],
+                                   [0, -1.45, 0]])
+        # ============================
         self.log.debug('Originial Weights')
         for iParticle in range(0, self.nParticles):
             self.log.debug(self.We[:,:,iParticle])
 
-        tStep = 0
+        tStep = 1
         self.importanceWeights = np.zeros( ( self.nParticles, 1))
         self._computeImportanceWeights( Measurement, tStep)
         self.log.debug('Importance weights')
-        self.log.debug( self.importanceWeights/np.sum(self.importanceWeights))
+        self.log.debug( self.importanceWeights)
         self._resample( tStep)
+
+        self.plotGraphWeightsDistribution( 0, 2, 1)
         
-        for tStep in range(1, self.particleSteps):
+        for tStep in range(2, self.nTimeSteps-1):
             self.We = self.Wbar[tStep - 1]
             
             self.log.debug('Resampled Weights')
@@ -410,14 +421,16 @@ class ParticleEstimator:
             
             self._computeImportanceWeights(Measurement, tStep)
             self.log.debug('Importance weights')
-            self.log.debug( self.importanceWeights/np.sum(self.importanceWeights))
+            self.log.debug( self.importanceWeights)
             self._resample( tStep)
 
+            self.plotGraphWeightsDistribution( 0, 2, tStep)
             self.log.info('Avg weightBar for time step ' + str(tStep) + ' is,')
             self.log.info(np.ndarray.mean( self.Wbar[ tStep],2))
 
+        
         self.log.info('Done particle filtering! Here it goes.. The average weight particle is,')
-        self.log.info(np.ndarray.mean( self.Wbar[ self.particleSteps - 1],2))
+        self.log.info(np.ndarray.mean( self.Wbar[ self.nTimeSteps - 2],2))
     """
     Class Initialization
     """

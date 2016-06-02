@@ -39,7 +39,7 @@ def HwOneR3(t, M, theta1, theta2):
     dM = np.zeros((3,1))
     dM[0] = 1
     dM[1] = theta2*M[2]
-    dM[2] = theta1*M[0]*M[1]
+    dM[2] = theta1*(M[0]+M[1])
     return dM
 
 # The ``driver`` that will integrate the ODE(s):
@@ -52,7 +52,7 @@ if __name__ == '__main__':
     M0 = np.ones((3,1))
 
     # parameters
-    trueThetas = np.array([-0.9, 2])
+    trueThetas = np.array([1, -1.45])
     
     r = ode( HwOneR3).set_integrator('dopri5')
     r.set_initial_value([M0[0], M0[1], M0[2]], t[0])
@@ -70,13 +70,13 @@ if __name__ == '__main__':
         k+=1
 
     # Add noise of variance vv
-    vv = 1
+    vv = 0.1
     M2hat = M[2,:] + np.random.rand(1,9)*np.sqrt(vv)
     M2hat = M2hat.ravel()
 
     nsteps = int(5000+1)
     stepSize = 2 / float(nsteps - 1)
-    thetaOne = np.arange(-2-stepSize,0,stepSize)
+    thetaOne = np.arange(0,2+stepSize,stepSize)
     # 2 + stepSize to ensure it goes all the way to 2
 
     prior = np.ones((nsteps,1))
@@ -85,7 +85,7 @@ if __name__ == '__main__':
     for j in range(0, nsteps):
 
 	trueThetas[0] = thetaOne[j]
-	trueThetas[1] = 2.5
+	trueThetas[1] = -1.45
         
         Mtest = np.zeros((3,9))
         Mtest[:,0] = np.ones(3)
