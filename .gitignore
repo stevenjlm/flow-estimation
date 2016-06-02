@@ -65,9 +65,3 @@ install_manifest.txt
 ##########
 *.npy
 *.npy~
-
-# presentation images #
-#######################
-*.png
-*.gif
-*.pdf
