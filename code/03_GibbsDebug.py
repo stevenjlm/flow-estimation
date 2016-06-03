@@ -59,8 +59,8 @@ if __name__ == '__main__':
     Measure.simulateNodeMeasurement( R3HwOne, 2, 0.1)
 
     # paramater estimation bounds
-    WlowerBound = np.array([[ 1, 0, 0],
-                            [ 0, 0, 0],
+    WlowerBound = np.array([[ 1, 0, -10],
+                            [ 0, 0, -10],
                             [ 0, -1.45, 0]])
     WupperBound = np.array([[ 1, 0, 10],
                             [ 0, 0, 10],

@@ -271,7 +271,9 @@ p\left(w_{ij}\right)=u\left(\left( \bm{W}_{up} \right)_{ij}, \left( \bm{W}_{low}
 \begin{frame}
 \frametitle{Gibbs Sampling for Reaction Networks}
 
-We now have an initial guess for the weights matrix $\bm{W}$. Next, we will update each component one at a time.
+\begin{block}{Step 3}
+{We now have an initial guess for the weights matrix $\bm{W}$. Next, we will update each component one at a time.}
+\end{block}
 
 \end{frame}
 
@@ -367,6 +369,13 @@ True parameters,
 \frametitle{Gibbs Sampling Problems}
 \begin{block}{Probability density in parameter space is too focused}
 {Most of the parameter space has near-zero probability. The space over plausible parameters is very small. This is espcially true for runaway reactions (where the rates are all positive).}
+\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{Particle Filters}
+\begin{block}{My bootstrap method probably has bugs}
+{Perhaps a regularized particle filter would be effective?}
 \end{block}
 \end{frame}
 

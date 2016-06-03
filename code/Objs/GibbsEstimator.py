@@ -45,7 +45,7 @@ class GibbsEstimator:
     We Histogram plots
     """
     def plotWeightDistribution(self, i, j, iGstep):
-        if i == 0 and j ==2:
+        if i == 0 and j == 2:
             vk = self.thetas[( i, j)]
             pk = self.paramPdfs[(i,j)]
             pk = pk/np.sum(pk)

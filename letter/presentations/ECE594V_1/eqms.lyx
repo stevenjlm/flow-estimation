@@ -149,5 +149,24 @@ p\left(w_{00}|x,w_{01},w_{02},w_{10},w_{11},...\right)
 
 \end_layout
 
+\begin_layout Standard
+w_{10} & w
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathbf{W}=\left[\begin{array}{ccc}
+1 & 0 & 1\\
+0 & 0 & 1\\
+0 & -1.45 & 0
+\end{array}\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
 \end_body
 \end_document
