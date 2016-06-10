@@ -37,4 +37,4 @@ Write-ups and presentations are in the letter directory.
 
 ## Comments/Discussion
 
-For the case of a linear ODE's I think Gibb's sampling is not a good method. A more straight-forward optimization approach is probably better and fast, so I will look into that more closely.
+For the case of a linear ODE's I think Gibb's sampling is not a good method. A more straight-forward optimization approach is probably better and faster, so I will look into that more closely.
