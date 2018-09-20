@@ -31,10 +31,6 @@ python 03_GibbsDebug.py
 
 Contains all the python code for the project. The main scripts, or driver scripts are at the root. The Objs directory is a python package with all the modules that implement the project.
 
-### The Letter Directory
-
-Write-ups and presentations are in the letter directory.
-
 ## Comments/Discussion
 
 For the case of a linear ODE's I think Gibb's sampling is not a good method. A more straight-forward optimization approach is probably better and faster, so I will look into that more closely.
