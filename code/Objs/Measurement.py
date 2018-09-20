@@ -1,11 +1,8 @@
 #!/usr/bin/env python
 """
-The Universe module defines classes for managing network representations
+The Measurement class simulates the time-evolution of the network
 """
-__author__ = "Steven Munn"
-__email__ = "sjmunn@umail.ucsb.edu"
-__date__ = "05-23-2016"
-
+# ================================================== Standard Packages
 # -------------------- Runtime communication
 import logging
 
@@ -32,21 +29,25 @@ import matplotlib.pyplot as plt
 
 # --------------------
 
+# ================================================== Local Definitions
 """
 Measurement Class allows us to esimate the universe parameters
 """
+
 
 class Measurement:
     """
     Simulate a measurement at a given node
     """
+
     def simulateNodeMeasurement(self, Universe, iNode, vv):
         self.vv = vv
         self.node = iNode
         M = Universe.M
-        self.nTimeSteps = np.size( M[iNode,:])
+        self.nTimeSteps = np.size(M[iNode, :])
         # Add noise of variance vv
-        self.Mhat = M[iNode,:] + np.random.rand( 1, self.nTimeSteps)*np.sqrt( vv)
+        self.Mhat = M[iNode, :] + np.random.rand(1,
+                                                 self.nTimeSteps) * np.sqrt(vv)
         self.Mhat = self.Mhat.ravel()
 
         self.log.debug('Simulated Measurement:')
@@ -55,5 +56,6 @@ class Measurement:
     """
     Class Initialization
     """
+
     def __init__(self):
-        self.log=logging.getLogger("Flow_Net")
+        self.log = logging.getLogger("Flow_Net")

@@ -4,11 +4,7 @@
 Preliminary tests for network flow parameter estimations
 """
 
-__author__ = "Steven Munn"
-__email__ = "sjmunn@umail.ucsb.edu"
-__date__ = "05-23-2016"
-
-# -------------------- Logging Tools
+# ================================================== Standard Packages
 import logging
 
 LEVEL = logging.INFO
@@ -34,13 +30,12 @@ import matplotlib.pyplot as plt
 
 plt.style.use('ggplot')
 
-# -------------------- Local Modules
+# ================================================== Local Packages
 import sys
 sys.path.insert(0, './Objs/')
 import Universe
 
-
-# -------------------- Begin simulations
+# ================================================== Main Simulation Script
 
 if __name__ == '__main__':
     log.info("Main script for 02Drv_GraphStruct.py has begun")
